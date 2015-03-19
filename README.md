@@ -1,2 +1,2 @@
 # mcts
-A implementation of Monte Carlo Search Trees in python
+An implementation of Monte Carlo Search Trees in python
