@@ -15,4 +15,4 @@ install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy
   - pip install -e .
 script: 
-  - py.test mcts
+  - PYTHONPATH=. py.test
