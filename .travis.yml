@@ -7,6 +7,6 @@ install:
   - pip install pytest numpy
   - python setup.py install
 script: 
-  - pwd
-  - cd test 
-  - py.test -q *.py
+  - cd mcts/tests
+  - py.test -q uct.py
+  - py.test -q toy_world_state.py
