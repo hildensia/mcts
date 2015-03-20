@@ -4,7 +4,7 @@ from setuptools import setup
 import mcts
 
 setup(
-    name='pymcts',
+    name='mcts',
     version=mcts.__version__,
     description='Monte Carlo Tree Search in Python',
     author='Johannes Kulick',
