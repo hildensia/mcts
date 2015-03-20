@@ -11,6 +11,6 @@ setup(
     author_email='johannes.kulick@ipvs.uni-stuttgart.de',
     url='http://github.com/hildensia/mcts',
     packages=['mcts'],
-    requires=['numpy', 'pytest']
+    requires=['numpy', 'scipy', 'pytest']
 )
 
