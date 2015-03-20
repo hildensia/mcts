@@ -17,6 +17,7 @@ lib/
 lib64/
 parts/
 sdist/
+virtualenvs/
 var/
 *.egg-info/
 .installed.cfg
@@ -52,3 +53,5 @@ docs/_build/
 
 # PyBuilder
 target/
+
+*ipynb
