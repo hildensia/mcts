@@ -13,6 +13,6 @@ before_install:
 
 install: 
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy
-  - python setup.py install
+  - pip install -e .
 script: 
   - py.test mcts
