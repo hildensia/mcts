@@ -56,3 +56,4 @@ target/
 
 *ipynb
 .idea/
+*pkl
