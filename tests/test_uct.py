@@ -227,7 +227,12 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
         assert state.n >= np.sum([action.n
                                   for action
                                   in state.children.values()]) >= state.n - 1
-        # is the latter really the case?
+        if state.parent is not None:
+            assert (np.array(list(state.state.belief.values())).sum() - 1 ==
+                    np.array(list(state.parent.parent.state.belief.values())).
+                    sum())
+
+
 
 
 def get_actions_and_states(node, data):
