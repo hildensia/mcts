@@ -27,10 +27,11 @@ class ToyWorldAction(object):
 
 
 class ToyWorld(object):
-    def __init__(self, size, information_gain, goal):
+    def __init__(self, size, information_gain, goal, manual):
         self.size = np.asarray(size)
         self.information_gain = information_gain
         self.goal = np.asarray(goal)
+        self.manual = manual
 
 
 class ToyWorldState(object):
@@ -63,6 +64,14 @@ class ToyWorldState(object):
         belief = deepcopy(self.belief)
         belief[action][sample] += 1
 
+        # manual found
+        if (self.pos == self.world.manual).all():
+            print("m", end="")
+            belief = {ToyWorldAction(np.array([0, 1])): [50, 1, 1, 1],
+                      ToyWorldAction(np.array([0, -1])): [1, 50, 1, 1],
+                      ToyWorldAction(np.array([1, 0])): [1, 1, 50, 1],
+                      ToyWorldAction(np.array([-1, 0])): [1, 1, 1, 50]}
+
         # build next state
         pos = self._correct_position(self.pos + self.actions[sample].action)
 
@@ -81,6 +90,14 @@ class ToyWorldState(object):
         elif (action.action == np.array([-1, 0])).all():
             real_action = 3
         belief[action][real_action] += 1
+
+        # manual found
+        if (self.pos == self.world.manual).all():
+            print("M", end="")
+            belief = {ToyWorldAction(np.array([0, 1])): [50, 1, 1, 1],
+                      ToyWorldAction(np.array([0, -1])): [1, 50, 1, 1],
+                      ToyWorldAction(np.array([1, 0])): [1, 1, 50, 1],
+                      ToyWorldAction(np.array([-1, 0])): [1, 1, 1, 50]}
 
         pos = self._correct_position(self.pos + action.action)
         return ToyWorldState(pos, self.world, belief)
@@ -103,13 +120,12 @@ class ToyWorldState(object):
     def reward(self, parent, action):
         if (self.pos == self.world.goal).all():
             print("g", end="")
-            return 1000
+            return 100
         else:
             reward = -1
-            # reward = -np.linalg.norm(self.pos-self.world.goal, ord=1)
+            #reward = -np.linalg.norm(self.pos-self.world.goal, ord=1)
             if self.world.information_gain:
                 for a in self.actions:
-                    reward += 10e0 * (entropy(parent.belief[a]) +
-                                      entropy(parent.belief[a], self.belief[a]))
+                    reward += entropy(parent.belief[a], self.belief[a])
             #print(" r{} ".format(reward))
             return reward

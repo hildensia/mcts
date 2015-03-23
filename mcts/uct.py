@@ -89,11 +89,11 @@ class ActionNode(Node):
         return "Action: {}".format(self.action)
 
 
-def uct_search(root, gamma, n=1500):
+def uct_search(root, gamma, n=1500, c=1.41):
     logger = logging.getLogger('uct')
     for i in range(n):
         print('.', end='')
-        node = tree_policy(root)
+        node = tree_policy(root, c)
         bellman_backup(node, gamma)
 
     logger.debug(dict([(action.action, action.q)
@@ -101,12 +101,12 @@ def uct_search(root, gamma, n=1500):
     return best_child(root, 0).parent.action
 
 
-def tree_policy(state_node):
+def tree_policy(state_node, c):
     while not state_node.state.is_terminal():
         if state_node.untried_actions:
             return expand(state_node)
         else:
-            state_node = best_child(state_node, np.sqrt(2))
+            state_node = best_child(state_node, c)
     return state_node
 
 
