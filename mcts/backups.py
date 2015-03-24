@@ -1,5 +1,5 @@
 from __future__ import division
-from graph import StateNode, ActionNode
+from .graph import StateNode, ActionNode
 
 __author__ = 'Johannes Kulick'
 

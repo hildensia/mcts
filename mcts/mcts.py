@@ -4,9 +4,9 @@ import functools
 import logging
 import random
 
-import backups
-import tree_policies
-import utils
+from . import backups
+from . import tree_policies
+from . import utils
 
 
 def mcts_search(root, gamma, n=1500, c=1.41):
