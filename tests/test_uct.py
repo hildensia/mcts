@@ -145,12 +145,11 @@ def test_rand_max():
     an1.q = 1
     an1.n = 1
 
-    ucb = functools.partial(ucb1, parent=parent, c=0)
     assert rand_max(parent.children.values(),
                               lambda x: x.q).action.name == 'a'
 
     assert rand_max(parent.children.values(),
-                              ucb).action.name == 'a'
+                    tree_policies.UCB1(0)).action.name == 'a'
 
 
 def test_untried_actions():
