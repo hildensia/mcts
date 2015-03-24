@@ -13,9 +13,8 @@ install:
   - conda update --yes conda
   - conda create -q -n test-environment --yes python=$TRAVIS_PYTHON_VERSION scipy
   - source activate test-environment
-  - pip install pytest
+  - pip install --force-reinstall pytest
   - pip install -e .
   
 script: 
-  - python -c "import scipy.stats"
-  - PYTHONPATH=. py.test
+  - py.test
