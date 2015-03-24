@@ -17,7 +17,7 @@ install:
   - pip install -e .
   
 script: 
-  - py.test --cov coveralls
+  - py.test --cov mcts
   
 after_success:
   - coveralls
