@@ -16,4 +16,4 @@ install:
   - python setup.py install
   
 script: 
-  - PYTHONPATH=. py.test
+  - py.test
