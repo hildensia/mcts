@@ -1,50 +1,44 @@
 from __future__ import print_function
 
 import functools
-import logging
 import random
 
 from . import backups
 from . import tree_policies
+from . import default_policies
 from . import utils
 
 
-def mcts_search(root, gamma, n=1500, c=1.41):
-    logger = logging.getLogger('uct')
-    for i in range(n):
-        print('.', end='')
-        node = tree_policy(root, c)
-        # default_policy(node)
-        backups.bellman_backup(node, gamma)
-
-    logger.debug(dict([(action.action, action.q)
-                       for action in root.children.values()]))
-    return best_child(root, 0).parent.action
+def uct(gamma, c=1.41):
+    return functools.partial(mcts, tree_policy=tree_policies.UCB1(c),
+                             default_policy=default_policies.immediate_reward,
+                             backup=backups.Bellman(gamma))
 
 
-def expand(state_node):
+def mcts(root, tree_policy, default_policy, backup, n=1500):
+    for _ in range(n):
+        node = _get_next_node(root, tree_policy)
+        node.reward = default_policy(node)
+        backup(node)
+
+    return utils.rand_max(root.children.values(), key=lambda x: x.q).action
+
+
+def _expand(state_node):
     action = random.choice(state_node.untried_actions)
     return state_node.children[action].sample_state()
 
 
-def best_child(state_node, c):
-    """
-    Returns a state node sample from the child action node with the highest
-    confidence bound,
-
-    :param state_node: The parent node
-    :param c: A parameter weighting the bounds
-    :return: A state node
-    """
-    ucb = functools.partial(tree_policies.ucb1, parent=state_node, c=c)
-    best_action_node = utils.rand_max(state_node.children.values(), key=ucb)
+def _best_child(state_node, tree_policy):
+    best_action_node = utils.rand_max(state_node.children.values(),
+                                      key=tree_policy)
     return best_action_node.sample_state()
 
 
-def tree_policy(state_node, c):
+def _get_next_node(state_node, tree_policy):
     while not state_node.state.is_terminal():
         if state_node.untried_actions:
-            return expand(state_node)
+            return _expand(state_node)
         else:
-            state_node = best_child(state_node, c)
+            state_node = _best_child(state_node, tree_policy)
     return state_node

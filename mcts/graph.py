@@ -19,8 +19,7 @@ class ActionNode(Node):
             state = self.parent.state.perform(self.action)
 
         if state not in self.children:
-            r = state.reward(self.parent.state, self.action)
-            self.children[state] = StateNode(self, state, r)
+            self.children[state] = StateNode(self, state)
 
         if real_world:
             self.children[state].state.belief = state.belief
@@ -33,10 +32,10 @@ class ActionNode(Node):
 
 class StateNode(Node):
 
-    def __init__(self, parent, state, reward):
+    def __init__(self, parent, state):
         super(StateNode, self).__init__(parent)
         self.state = state
-        self.reward = reward
+        self.reward = 0
         for action in state.actions:
             self.children[action] = ActionNode(self, action)
 
