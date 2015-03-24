@@ -1,8 +1,6 @@
 from __future__ import division
 from .graph import StateNode, ActionNode
 
-__author__ = 'Johannes Kulick'
-
 
 def bellman_backup(node, gamma):
     while node is not None:

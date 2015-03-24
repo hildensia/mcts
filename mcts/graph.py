@@ -1,6 +1,3 @@
-__author__ = 'Johannes Kulick'
-
-
 class Node(object):
     def __init__(self, parent):
         self.parent = parent

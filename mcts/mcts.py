@@ -14,7 +14,7 @@ def mcts_search(root, gamma, n=1500, c=1.41):
     for i in range(n):
         print('.', end='')
         node = tree_policy(root, c)
-        #default_policy(node)
+        # default_policy(node)
         backups.bellman_backup(node, gamma)
 
     logger.debug(dict([(action.action, action.q)

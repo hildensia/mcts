@@ -1,8 +1,6 @@
 import random
 import numpy as np
 
-__author__ = 'Johannes Kulick'
-
 
 def rand_max(iterable, key=None):
     if key is None:

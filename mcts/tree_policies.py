@@ -2,9 +2,6 @@ from __future__ import division
 import numpy as np
 
 
-__author__ = 'Johannes Kulick'
-
-
 def ucb1(action_node, parent, c):
     """
     The Upper Confidence Bounds computation

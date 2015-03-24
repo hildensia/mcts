@@ -5,8 +5,6 @@ import numpy as np
 from scipy.stats import rv_discrete, entropy
 from copy import deepcopy
 
-__author__ = 'johannes'
-
 
 class ToyWorldAction(object):
     def __init__(self, action):
@@ -54,8 +52,8 @@ class ToyWorldState(object):
     def perform(self, action):
         # get distribution about outcomes
         probabilities = self.belief[action] / np.sum(self.belief[action])
-        distrib = rv_discrete(values=(range(len(probabilities)), probabilities))
-
+        distrib = rv_discrete(values=(range(len(probabilities)),
+                                      probabilities))
 
         # draw sample
         sample = distrib.rvs()
@@ -75,7 +73,6 @@ class ToyWorldState(object):
         # build next state
         pos = self._correct_position(self.pos + self.actions[sample].action)
 
-        #pos = self._correct_position(self.pos + action.action)
         return ToyWorldState(pos, self.world, belief)
 
     def real_world_perform(self, action):
@@ -123,9 +120,7 @@ class ToyWorldState(object):
             return 100
         else:
             reward = -1
-            #reward = -np.linalg.norm(self.pos-self.world.goal, ord=1)
             if self.world.information_gain:
                 for a in self.actions:
                     reward += entropy(parent.belief[a], self.belief[a])
-            #print(" r{} ".format(reward))
             return reward
