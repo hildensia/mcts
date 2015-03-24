@@ -4,7 +4,6 @@ import random
 from mcts.graph import (depth_first_search, get_actions_and_states, StateNode)
 from mcts.mcts import *
 from mcts.utils import rand_max
-from mcts.tree_policies import ucb1
 from mcts.states.toy_world_state import *
 
 
@@ -42,12 +41,13 @@ class UCBTestState(object):
 
 
 def test_ucb1():
+    ucb1 = tree_policies.UCB1(1)
     parent = StateNode(None, UCBTestState())
     an = parent.children[0]
 
     an.n = 1
     parent.n = 1
-    assert ucb1(an, parent, 1) == 0
+    assert ucb1(an) == 0
     ucb = functools.partial(ucb1, parent=parent, c=1)
     ucb_1 = functools.partial(ucb1, parent=parent, c=1)
     assert ucb(an) == 0
@@ -55,14 +55,14 @@ def test_ucb1():
 
     an.n = 0
     parent.n = 1
-    assert np.isnan(ucb1(an, parent, 1))
+    assert np.isnan(ucb1(an))
     ucb = functools.partial(ucb1, parent=parent, c=1)
     assert np.isnan(ucb(an))
     assert np.isnan(ucb_1(an))
 
     an.n = 1
     parent.n = 0
-    assert np.isnan(ucb1(an, parent, 1))
+    assert np.isnan(ucb1(an))
     ucb = functools.partial(ucb1, parent=parent, c=1)
     assert np.isnan(ucb(an))
     assert np.isnan(ucb_1(an))
@@ -70,14 +70,14 @@ def test_ucb1():
     an.q = 1
     an.n = 1
     parent.n = 1
-    assert ucb1(an, parent, 1) == 1
+    assert ucb1(an) == 1
     ucb = functools.partial(ucb1, parent=parent, c=1)
     assert ucb(an) == 1
     assert ucb_1(an) == 1
 
     an.q = 19
     an.n = 0
-    assert ucb1(an, parent, 0) == 19
+    assert ucb1(an) == 19
 
 
 class ComplexTestState(object):
