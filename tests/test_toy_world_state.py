@@ -8,7 +8,7 @@ __author__ = 'johannes'
 def test_perform():
     n = 1000
 
-    world = ToyWorld((100, 100), False, (0, 0))
+    world = ToyWorld((100, 100), False, (0, 0), np.array([100, 100]))
     belief = dict(zip([ToyWorldAction(np.array([0, 1])),
                        ToyWorldAction(np.array([0, -1])),
                        ToyWorldAction(np.array([1, 0])),
