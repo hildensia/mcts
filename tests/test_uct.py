@@ -1,5 +1,3 @@
-__author__ = 'johannes'
-
 import pytest
 import random
 
@@ -44,7 +42,7 @@ class UCBTestState(object):
 
 
 def test_ucb1():
-    parent = StateNode(None, UCBTestState(), 0)
+    parent = StateNode(None, UCBTestState())
     an = parent.children[0]
 
     an.n = 1
@@ -115,7 +113,7 @@ class ComplexTestAction(object):
 
 
 def test_best_child():
-    parent = StateNode(None, ComplexTestState('root'), 0)
+    parent = StateNode(None, ComplexTestState('root'))
     an0 = parent.children[ComplexTestAction('a')]
     an1 = parent.children[ComplexTestAction('b')]
 
@@ -126,7 +124,9 @@ def test_best_child():
 
     assert len(parent.children.values()) == 2
 
-    assert best_child(parent, 0).state.name == 'a'
+    child_state = utils.rand_max(parent.children.values(),
+                                 key=lambda x: x.q).sample_state()
+    assert child_state.state.name == 'a'
 
 
 def test_rand_max():
@@ -136,7 +136,7 @@ def test_rand_max():
     i = [1, -5, 3, 2]
     assert rand_max(i, key=lambda x:x**2) == -5
 
-    parent = StateNode(None, ComplexTestState('root'), 0)
+    parent = StateNode(None, ComplexTestState('root'))
     an0 = parent.children[ComplexTestAction('a')]
     an1 = parent.children[ComplexTestAction('b')]
 
@@ -155,7 +155,7 @@ def test_rand_max():
 
 def test_untried_actions():
     s = ComplexTestState('root')
-    sn = StateNode(None, s, 0)
+    sn = StateNode(None, s)
     assert ComplexTestAction('a') in sn.untried_actions
     assert ComplexTestAction('b') in sn.untried_actions
 
@@ -166,7 +166,7 @@ def test_untried_actions():
 
 def test_sample_state():
     s = ComplexTestState('root')
-    root = StateNode(None, s, 0)
+    root = StateNode(None, s)
 
     child = root.children[ComplexTestAction('a')]
     child.sample_state()
@@ -183,7 +183,7 @@ def test_sample_state():
 def toy_world_root():
     world = ToyWorld((100, 100), False, (10, 10), np.array([100, 100]))
     state = ToyWorldState((0, 0), world)
-    root = StateNode(None, state, 0)
+    root = StateNode(None, state)
     return root, state
 
 
@@ -192,15 +192,15 @@ def test_single_run_uct_search(toy_world_root, gamma):
     root, state = toy_world_root
     random.seed()
 
-    best_child = mcts_search(root=root, gamma=gamma, n=1)
+    best_child = uct(gamma=gamma)(root=root, n=1)
 
     states = [state for states in [action.children.values()
                                    for action in root.children.values()]
               for state in states]
 
-    assert len(states) == 2
+    assert len(states) == 1
 
-    assert (len(list(root.children[best_child].children.values())) == 1)
+    assert (len(list(root.children[best_child].children.values())) == 0)
 
     expanded = None
     for action in root.children.values():
@@ -227,7 +227,7 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
     root, state = toy_world_root
     random.seed()
 
-    mcts_search(root=root, gamma=gamma, n=n)
+    uct(gamma=gamma)(root=root, n=n)
 
     assert root.n == n
 
@@ -250,8 +250,8 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
 
 @parametrize_gamma
 def test_q_value_simple_state(gamma, eps):
-    root = StateNode(None, UCBTestState(0), 0)
-    mcts_search(root, gamma=gamma, n=350, c=2)
+    root = StateNode(None, UCBTestState(0))
+    uct(gamma=gamma, c=2)(root=root, n=250)
     assert root.q - (-1./(1 - gamma)) < eps
 
 
@@ -259,6 +259,6 @@ def test_q_value_simple_state(gamma, eps):
 def test_q_value_complex_state(gamma, eps):
     if gamma > 0.5:  # with bigger gamma UCT converges too slow
         return
-    root = StateNode(None, ComplexTestState(0), 0)
-    mcts_search(root, gamma=gamma, n=1500, c=2)
+    root = StateNode(None, ComplexTestState(0))
+    uct(gamma=gamma, c=2)(root=root, n=1500)
     assert root.q - (-1./(1 - gamma)) < eps

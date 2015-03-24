@@ -2,8 +2,6 @@ from __future__ import division
 
 from mcts.states.toy_world_state import *
 
-__author__ = 'johannes'
-
 
 def test_perform():
     n = 1000
