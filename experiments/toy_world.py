@@ -1,12 +1,16 @@
 from __future__ import division
 from __future__ import print_function
 
-from mcts import uct
-from mcts import toy_world_state as state
-
-import numpy as np
 import random
 import argparse
+
+import numpy as np
+
+from mcts.mcts import mcts_search
+from mcts.states import toy_world_state as state
+from mcts.graph import StateNode
+
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -38,11 +42,11 @@ def run_experiment(intrinsic_motivation, gamma, c, mc_n, runs, steps):
                                [10, 10, 10, 10], [10, 10, 10, 10]]))
         root_state = state.ToyWorldState(start, world, belief=belief)
         print(root_state.pos)
-        next_state = uct.StateNode(None, root_state, 0)
+        next_state = StateNode(None, root_state, 0)
         trajectory =[]
         for _ in range(steps):
             try:
-                ba = uct.uct_search(next_state, gamma, c=c, n=mc_n)
+                ba = mcts_search(next_state, gamma, c=c, n=mc_n)
                 print("")
                 print("=" * 80)
                 print("State: {}".format(next_state.state))

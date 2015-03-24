@@ -1,7 +1,6 @@
 from __future__ import division
 
-import pytest
-from mcts.toy_world_state import *
+from mcts.states.toy_world_state import *
 
 __author__ = 'johannes'
 

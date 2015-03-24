@@ -1,22 +1,46 @@
 __author__ = 'johannes'
 
 import pytest
-from mcts.uct import *
-from mcts.uct import _rand_max
-from mcts.toy_world_state import *
-import numpy as np
-import functools
+import random
+
+from mcts.graph import (depth_first_search, get_actions_and_states, StateNode)
+from mcts.mcts import *
+from mcts.utils import rand_max
+from mcts.tree_policies import ucb1
+from mcts.states.toy_world_state import *
+
 
 parametrize_gamma = pytest.mark.parametrize("gamma",
                                             [.1, .2, .3, .4, .5, .6, .7, .8,
-                                            .9])
+                                             .9])
 
 parametrize_n = pytest.mark.parametrize("n", [1, 10, 23, 100, 101])
 
 
+@pytest.fixture
+def eps():
+    return 10e-3
+
+
 class UCBTestState(object):
-    def __init__(self):
+    def __init__(self, id=0):
         self.actions = [0]
+        self.hash = id
+
+    def perform(self, action):
+        return UCBTestState(self.hash+1)
+
+    def is_terminal(self):
+        return False
+
+    def reward(self, parent, action):
+        return -1
+
+    def __hash__(self):
+        return self.hash
+
+    def __eq__(self, other):
+        return self.hash == other.hash
 
 
 def test_ucb1():
@@ -70,7 +94,7 @@ class ComplexTestState(object):
         return False
 
     def reward(self, parent, action):
-        return 0
+        return -1
 
     def __hash__(self):
         return self.name.__hash__()
@@ -107,10 +131,10 @@ def test_best_child():
 
 def test_rand_max():
     i = [1, 4, 5, 3]
-    assert _rand_max(i) == 5
+    assert rand_max(i) == 5
 
     i = [1, -5, 3, 2]
-    assert _rand_max(i, key=lambda x:x**2) == -5
+    assert rand_max(i, key=lambda x:x**2) == -5
 
     parent = StateNode(None, ComplexTestState('root'), 0)
     an0 = parent.children[ComplexTestAction('a')]
@@ -122,10 +146,10 @@ def test_rand_max():
     an1.n = 1
 
     ucb = functools.partial(ucb1, parent=parent, c=0)
-    assert _rand_max(parent.children.values(),
+    assert rand_max(parent.children.values(),
                               lambda x: x.q).action.name == 'a'
 
-    assert _rand_max(parent.children.values(),
+    assert rand_max(parent.children.values(),
                               ucb).action.name == 'a'
 
 
@@ -157,18 +181,9 @@ def test_sample_state():
 
 @pytest.fixture
 def toy_world_root():
-    world = ToyWorld((100, 100), False, (10, 10))
-    # belief = dict(zip([ToyWorldAction(np.array([0, 1])),
-    #                    ToyWorldAction(np.array([0, -1])),
-    #                    ToyWorldAction(np.array([1, 0])),
-    #                    ToyWorldAction(np.array([-1, 0]))],
-    #                   [[10, 1, 1, 1], [1, 10, 1, 1], [1, 1, 10, 1],
-    #                    [1, 1, 1, 10]]))
-
-    state = ToyWorldState((0,0), world)
-
+    world = ToyWorld((100, 100), False, (10, 10), np.array([100, 100]))
+    state = ToyWorldState((0, 0), world)
     root = StateNode(None, state, 0)
-
     return root, state
 
 
@@ -177,7 +192,7 @@ def test_single_run_uct_search(toy_world_root, gamma):
     root, state = toy_world_root
     random.seed()
 
-    best_child = uct_search(root=root, gamma=gamma, n=1)
+    best_child = mcts_search(root=root, gamma=gamma, n=1)
 
     states = [state for states in [action.children.values()
                                    for action in root.children.values()]
@@ -190,7 +205,7 @@ def test_single_run_uct_search(toy_world_root, gamma):
     expanded = None
     for action in root.children.values():
         if (action.action != best_child and
-                    len(list(action.children.values())) == 1):
+                len(list(action.children.values())) == 1):
             assert expanded is None
             expanded = action
 
@@ -212,7 +227,7 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
     root, state = toy_world_root
     random.seed()
 
-    best_child = uct_search(root=root, gamma=gamma, n=n)
+    mcts_search(root=root, gamma=gamma, n=n)
 
     assert root.n == n
 
@@ -233,29 +248,17 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
                     sum())
 
 
+@parametrize_gamma
+def test_q_value_simple_state(gamma, eps):
+    root = StateNode(None, UCBTestState(0), 0)
+    mcts_search(root, gamma=gamma, n=350, c=2)
+    assert root.q - (-1./(1 - gamma)) < eps
 
 
-def get_actions_and_states(node, data):
-    if data is None:
-        data = ([], [])
-
-    action_nodes, state_nodes = data
-
-    if isinstance(node, ActionNode):
-        action_nodes.append(node)
-    elif isinstance(node, StateNode):
-        state_nodes.append(node)
-
-    return action_nodes, state_nodes
-
-
-def depth_first_search(root, fnc=None):
-    data = None
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        data = fnc(node, data)
-        for child in node.children.values():
-            stack.append(child)
-    return data
-
+@parametrize_gamma
+def test_q_value_complex_state(gamma, eps):
+    if gamma > 0.5:  # with bigger gamma UCT converges too slow
+        return
+    root = StateNode(None, ComplexTestState(0), 0)
+    mcts_search(root, gamma=gamma, n=1500, c=2)
+    assert root.q - (-1./(1 - gamma)) < eps
