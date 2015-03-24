@@ -3,9 +3,10 @@ from __future__ import print_function
 import functools
 import logging
 import random
-from mcts.backups import bellman_backup
-from mcts.tree_policies import ucb1
-from mcts.utils import rand_max
+
+import backups
+import tree_policies
+import utils
 
 
 def mcts_search(root, gamma, n=1500, c=1.41):
@@ -14,7 +15,7 @@ def mcts_search(root, gamma, n=1500, c=1.41):
         print('.', end='')
         node = tree_policy(root, c)
         #default_policy(node)
-        bellman_backup(node, gamma)
+        backups.bellman_backup(node, gamma)
 
     logger.debug(dict([(action.action, action.q)
                        for action in root.children.values()]))
@@ -35,8 +36,8 @@ def best_child(state_node, c):
     :param c: A parameter weighting the bounds
     :return: A state node
     """
-    ucb = functools.partial(ucb1, parent=state_node, c=c)
-    best_action_node = rand_max(state_node.children.values(), key=ucb)
+    ucb = functools.partial(tree_policies.ucb1, parent=state_node, c=c)
+    best_action_node = utils.rand_max(state_node.children.values(), key=ucb)
     return best_action_node.sample_state()
 
 
