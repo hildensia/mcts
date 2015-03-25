@@ -1,27 +1,23 @@
 from __future__ import print_function
 
-import functools
 import random
-
-from . import backups
-from . import tree_policies
-from . import default_policies
 from . import utils
 
 
-def uct(gamma, c=1.41):
-    return functools.partial(mcts, tree_policy=tree_policies.UCB1(c),
-                             default_policy=default_policies.immediate_reward,
-                             backup=backups.Bellman(gamma))
+class MCTS(object):
+    def __init__(self, tree_policy, default_policy, backup):
+        self.tree_policy = tree_policy
+        self.default_policy = default_policy
+        self.backup = backup
 
+    def __call__(self, root, n=1500):
+            for _ in range(n):
+                node = _get_next_node(root, self.tree_policy)
+                node.reward = self.default_policy(node)
+                self.backup(node)
 
-def mcts(root, tree_policy, default_policy, backup, n=1500):
-    for _ in range(n):
-        node = _get_next_node(root, tree_policy)
-        node.reward = default_policy(node)
-        backup(node)
-
-    return utils.rand_max(root.children.values(), key=lambda x: x.q).action
+            return utils.rand_max(root.children.values(),
+                                  key=lambda x: x.q).action
 
 
 def _expand(state_node):

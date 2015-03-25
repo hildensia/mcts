@@ -6,6 +6,10 @@ from mcts.mcts import *
 from mcts.utils import rand_max
 from mcts.states.toy_world_state import *
 
+import mcts.tree_policies as tree_policies
+import mcts.default_policies as default_policies
+import mcts.backups as backups
+
 
 parametrize_gamma = pytest.mark.parametrize("gamma",
                                             [.1, .2, .3, .4, .5, .6, .7, .8,
@@ -184,7 +188,10 @@ def test_single_run_uct_search(toy_world_root, gamma):
     root, state = toy_world_root
     random.seed()
 
-    best_child = uct(gamma=gamma)(root=root, n=1)
+    uct = MCTS(tree_policies.UCB1(1.41), default_policies.immediate_reward,
+               backups.Bellman(gamma))
+
+    best_child = uct(root=root, n=1)
 
     states = [state for states in [action.children.values()
                                    for action in root.children.values()]
@@ -219,7 +226,9 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
     root, state = toy_world_root
     random.seed()
 
-    uct(gamma=gamma)(root=root, n=n)
+    uct = MCTS(tree_policies.UCB1(1.41), default_policies.immediate_reward,
+               backups.Bellman(gamma))
+    uct(root=root, n=n)
 
     assert root.n == n
 
@@ -243,7 +252,9 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
 @parametrize_gamma
 def test_q_value_simple_state(gamma, eps):
     root = StateNode(None, UCBTestState(0))
-    uct(gamma=gamma, c=2)(root=root, n=250)
+    uct = MCTS(tree_policies.UCB1(1.41), default_policies.immediate_reward,
+               backups.Bellman(gamma))
+    uct(root=root, n=250)
     assert root.q - (-1./(1 - gamma)) < eps
 
 
@@ -252,5 +263,7 @@ def test_q_value_complex_state(gamma, eps):
     if gamma > 0.5:  # with bigger gamma UCT converges too slow
         return
     root = StateNode(None, ComplexTestState(0))
-    uct(gamma=gamma, c=2)(root=root, n=1500)
+    uct = MCTS(tree_policies.UCB1(1.41), default_policies.immediate_reward,
+               backups.Bellman(gamma))
+    uct(root=root, n=1500)
     assert root.q - (-1./(1 - gamma)) < eps
