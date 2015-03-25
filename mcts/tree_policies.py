@@ -3,6 +3,9 @@ import numpy as np
 
 
 class UCB1(object):
+    """
+    The typical bandit upper confidence bounds algorithm.
+    """
     def __init__(self, c):
         self.c = c
 
@@ -17,4 +20,9 @@ class UCB1(object):
 
 
 def flat(_):
+    """
+    All actions are considered equally useful
+    :param _:
+    :return:
+    """
     return 0

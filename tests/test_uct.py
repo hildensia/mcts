@@ -1,7 +1,7 @@
 import pytest
 import random
 
-from mcts.graph import (depth_first_search, get_actions_and_states, StateNode)
+from mcts.graph import (depth_first_search, _get_actions_and_states, StateNode)
 from mcts.mcts import *
 from mcts.utils import rand_max
 from mcts.states.toy_world_state import *
@@ -233,7 +233,7 @@ def test_n_run_uct_search(toy_world_root, gamma, n):
     assert root.n == n
 
     action_nodes, state_nodes = depth_first_search(root,
-                                                   get_actions_and_states)
+                                                   _get_actions_and_states)
 
     for action in action_nodes:
         assert action.n == np.sum([state.n

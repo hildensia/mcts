@@ -5,19 +5,33 @@ from . import utils
 
 
 class MCTS(object):
+    """
+    The central MCTS class, which performs the tree search. It gets a
+    tree policy, a default policy, and a backup strategy.
+    See e.g. Browne et al. (2012) for a survey on monte carlo tree search
+    """
     def __init__(self, tree_policy, default_policy, backup):
         self.tree_policy = tree_policy
         self.default_policy = default_policy
         self.backup = backup
 
     def __call__(self, root, n=1500):
-            for _ in range(n):
-                node = _get_next_node(root, self.tree_policy)
-                node.reward = self.default_policy(node)
-                self.backup(node)
+        """
+        Run the monte carlo tree search.
 
-            return utils.rand_max(root.children.values(),
-                                  key=lambda x: x.q).action
+        :param root: The StateNode
+        :param n: The number of roll-outs to be performed
+        :return:
+        """
+        if root.parent is not None:
+            raise ValueError("Root's parent must be None.")
+
+        for _ in range(n):
+            node = _get_next_node(root, self.tree_policy)
+            node.reward = self.default_policy(node)
+            self.backup(node)
+
+        return utils.rand_max(root.children.values(), key=lambda x: x.q).action
 
 
 def _expand(state_node):
