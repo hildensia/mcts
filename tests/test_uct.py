@@ -48,32 +48,25 @@ def test_ucb1():
     an.n = 1
     parent.n = 1
     assert ucb1(an) == 0
-    ucb = functools.partial(ucb1, parent=parent, c=1)
-    ucb_1 = functools.partial(ucb1, parent=parent, c=1)
-    assert ucb(an) == 0
-    assert ucb_1(an) == 0
 
     an.n = 0
     parent.n = 1
     assert np.isnan(ucb1(an))
-    ucb = functools.partial(ucb1, parent=parent, c=1)
-    assert np.isnan(ucb(an))
-    assert np.isnan(ucb_1(an))
 
     an.n = 1
     parent.n = 0
     assert np.isnan(ucb1(an))
-    ucb = functools.partial(ucb1, parent=parent, c=1)
-    assert np.isnan(ucb(an))
-    assert np.isnan(ucb_1(an))
 
     an.q = 1
     an.n = 1
     parent.n = 1
     assert ucb1(an) == 1
-    ucb = functools.partial(ucb1, parent=parent, c=1)
-    assert ucb(an) == 1
-    assert ucb_1(an) == 1
+
+
+def test_ucb1_c0():
+    ucb1 = tree_policies.UCB1(0)
+    parent = StateNode(None, UCBTestState())
+    an = parent.children[0]
 
     an.q = 19
     an.n = 0
