@@ -14,3 +14,7 @@ class UCB1(object):
         return (action_node.q +
                 self.c * np.sqrt(2 * np.log(action_node.parent.n) /
                                  action_node.n))
+
+
+def flat(_):
+    return 0

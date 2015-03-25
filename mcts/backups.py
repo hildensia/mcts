@@ -16,3 +16,11 @@ class Bellman(object):
                 node.q = sum([(self.gamma * x.q + x.reward) * x.n
                               for x in node.children.values()]) / n
             node = node.parent
+
+
+def monte_carlo(node):
+    r = node.reward
+    while node is not None:
+        node.n += 1
+        node.q = ((node.n - 1)/node.n) * node.q + 1/node.n * r
+        node = node.parent
