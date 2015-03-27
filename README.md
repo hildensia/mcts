@@ -1,6 +1,11 @@
 [![Build Status](https://travis-ci.org/hildensia/mcts.svg?branch=master)](https://travis-ci.org/hildensia/mcts)
 [![Coverage Status](https://coveralls.io/repos/hildensia/mcts/badge.svg)](https://coveralls.io/r/hildensia/mcts)
 #scikit.mcts#
+
+Version: 0.1 (It's still alpha, don't use it for your production website!)
+
+Website: https://github.com/hildensia/mcts
+
 An implementation of Monte Carlo Search Trees in python.
 
 ## Setup
