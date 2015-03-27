@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/hildensia/mcts.svg?branch=master)](https://travis-ci.org/hildensia/mcts)
 [![Coverage Status](https://coveralls.io/repos/hildensia/mcts/badge.svg)](https://coveralls.io/r/hildensia/mcts)
-#mcts#
+#scikit.mcts#
 An implementation of Monte Carlo Search Trees in python.
 
 ## Setup
@@ -9,7 +9,7 @@ Requirements:
  * scipy
  * pytest for tests
 
-Than plain simple `python setup.py install`.
+Than plain simple `python setup.py install`. Or use `pip`: `pip install scikit.mcts`.
 
 ## Usage
 Assume you have a very simple 3x3 maze. An action could be 'up', 'down', 'left' or 'right'. You start at `[0, 0]` and there is a reward at `[3, 3]`.
