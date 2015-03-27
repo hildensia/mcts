@@ -4,8 +4,13 @@
 An implementation of Monte Carlo Search Trees in python.
 
 ## Setup
-Plain simple `python setup.py install`.
-    
+Requirements:
+ * numpy
+ * scipy
+ * pytest for tests
+
+Than plain simple `python setup.py install`.
+
 ## Usage
 Assume you have a very simple 3x3 maze. An action could be 'up', 'down', 'left' or 'right'. You start at `[0, 0]` and there is a reward at `[3, 3]`.
 
