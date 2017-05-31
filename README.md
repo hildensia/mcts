@@ -39,14 +39,11 @@ Assume you have a very simple 3x3 maze. An action could be 'up', 'down', 'left' 
         
         def perform(self, action):
             pos = self.pos + action.move
-            pos[0] = min(pos[0], 2)
-            pos[1] = min(pos[1], 2)
-            pos[0] = max(pos[0], 0)
-            pos[1] = max(pos[1], 0)
+            pos = np.clip(pos, 0, 2)
             return MazeState(pos)
             
         def reward(self, parent, action):
-            if all(self.pos = np.array([2, 2])):
+            if all(self.pos == np.array([2, 2])):
                 return 10
             else:
                 return -1
