@@ -63,7 +63,7 @@ This would be a plain simple implementation. Now let's run MCTS on top:
                 default_policy=immediate_reward,
                 backup=monte_carlo)
     
-    root = StateNode(MazeState([0, 0]))
+    root = StateNode(parent=None, state=MazeState([0, 0]))
     best_action = mcts(root)
 
 
