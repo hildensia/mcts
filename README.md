@@ -17,7 +17,7 @@ Requirements:
 Than plain simple `python setup.py install`. Or use `pip`: `pip install scikit.mcts`.
 
 ## Usage
-Assume you have a very simple 3x3 maze. An action could be 'up', 'down', 'left' or 'right'. You start at `[0, 0]` and there is a reward at `[3, 3]`.
+Assume you have a very simple 3x3 maze. An action could be 'up', 'down', 'left' or 'right'. You start at `[0, 0]` and there is a reward at `[2, 2]`.
 
     class MazeAction(object):
         def __init__(self, move):
